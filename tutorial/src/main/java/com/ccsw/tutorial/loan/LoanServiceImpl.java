@@ -1,20 +1,22 @@
 package com.ccsw.tutorial.loan;
 
-import com.ccsw.tutorial.author.AuthorService;
+
 import com.ccsw.tutorial.client.ClientService;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.GameService;
-import com.ccsw.tutorial.game.GameSpecification;
-import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
+import com.ccsw.tutorial.loan.model.LoanSearchDto;
+
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
+
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -28,31 +30,38 @@ public class LoanServiceImpl implements LoanService {
     @Autowired
     LoanRepository loanRepository;
 
-     @Autowired
-    AuthorService authorService;
-
     @Autowired
     ClientService clientService;
 
     @Autowired
     GameService gameService;
 
+    @Override
+    public List<Loan> findAll() {
+        return (List<Loan>) this.loanRepository.findAll();
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public List<Loan> find(Date fechainic, Long idClient, Long idGame) {
+    public Page<Loan> findPage(Long gameId, Long clientId, LocalDate date, LoanSearchDto dto) {
+    // Especificaciones para filtrar por gameId y clientId
+    LoanSpecification idGameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", gameId));
+    LoanSpecification idClientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", clientId));
 
-       LoanSpecification fechaSpec = new LoanSpecification(new SearchCriteria("fechainic", ":", fechainic));
-        LoanSpecification gameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", idGame));
-        LoanSpecification clientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", idClient));
+    Specification<Loan> spec = Specification.where(idGameSpec).and(idClientSpec);
 
-        Specification<Loan> spec = Specification.where(fechaSpec).and(gameSpec).and(clientSpec);
-
-        return this.loanRepository.findAll(spec);
+    // Validar si la fecha no es nula antes de agregar el filtro de fechas
+    if (date != null) {
+        LoanSpecification dateBetweenSpec = new LoanSpecification(
+            new SearchCriteria("fechainic", "between", List.of(date, date))
+        );
+        spec = spec.and(dateBetweenSpec);
     }
 
+    return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
+}
     /**
      * {@inheritDoc}
      */
@@ -68,7 +77,6 @@ public class LoanServiceImpl implements LoanService {
         }
 
         BeanUtils.copyProperties(dto, loan, "id", "game", "client");
-
         loan.setClient(clientService.get(dto.getClient().getId()));
         loan.setGame(gameService.get(dto.getGame().getId()));
 
@@ -87,5 +95,7 @@ public class LoanServiceImpl implements LoanService {
 
           this.loanRepository.deleteById(id);
     }
+
+    
 
 }

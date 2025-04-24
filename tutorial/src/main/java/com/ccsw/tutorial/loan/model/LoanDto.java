@@ -1,6 +1,8 @@
 package com.ccsw.tutorial.loan.model;
 
-import java.sql.Date;
+
+
+import java.time.LocalDate;
 
 import com.ccsw.tutorial.client.model.ClientDto;
 import com.ccsw.tutorial.game.model.GameDto;
@@ -8,8 +10,8 @@ import com.ccsw.tutorial.game.model.GameDto;
 public class LoanDto {
     
     private Long id;
-    private Date fechainic;
-    private Date fechafin;
+    private LocalDate fechainic;
+    private LocalDate fechafin;
     private ClientDto client;
     private GameDto game;
 
@@ -21,19 +23,19 @@ public class LoanDto {
         this.id = id;
     }
 
-    public Date getFechainic() {
+    public LocalDate getFechainic() {
         return fechainic;
     }
 
-    public void setFechainic(Date fechainic) {
+    public void setFechainic(LocalDate fechainic) {
         this.fechainic = fechainic;
     }
 
-    public Date getFechafin() {
+    public LocalDate getFechafin() {
         return fechafin;
     }
 
-    public void setFechafin(Date fechafin) {
+    public void setFechafin(LocalDate fechafin) {
         this.fechafin = fechafin;
     }
 

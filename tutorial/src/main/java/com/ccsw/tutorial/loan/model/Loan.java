@@ -1,6 +1,6 @@
 package com.ccsw.tutorial.loan.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.ccsw.tutorial.game.model.Game;
 import com.ccsw.tutorial.client.model.Client;
@@ -23,10 +23,10 @@ public class Loan {
     private Long id;
 
     @Column(name = "fechainic", nullable = false)
-    private Date fechainic;
+    private LocalDate fechainic;
 
     @Column(name = "fechafin", nullable = false)
-    private Date fechafin;
+    private LocalDate fechafin;
 
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
@@ -44,19 +44,19 @@ public class Loan {
         this.id = id;
     }
 
-    public Date getFechainic() {
+    public LocalDate getFechainic() {
         return this.fechainic;
     }
 
-    public void setFechainic(Date fechainic) {
+    public void setFechainic(LocalDate fechainic) {
         this.fechainic = fechainic;
     }
 
-    public Date getFechafin() {
+    public LocalDate getFechafin() {
         return this.fechafin;
     }
 
-    public void setFechafin(Date fechafin) {
+    public void setFechafin(LocalDate fechafin) {
         this.fechafin = fechafin;
     }
 

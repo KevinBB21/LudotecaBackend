@@ -1,7 +1,6 @@
 package com.ccsw.tutorial.game;
 
 import com.ccsw.tutorial.author.AuthorService;
-import com.ccsw.tutorial.author.model.Author;
 import com.ccsw.tutorial.category.CategoryService;
 import com.ccsw.tutorial.common.criteria.SearchCriteria;
 import com.ccsw.tutorial.game.model.Game;

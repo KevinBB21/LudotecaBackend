@@ -2,9 +2,13 @@ package com.ccsw.tutorial.loan;
 
 import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
+import com.ccsw.tutorial.loan.model.LoanSearchDto;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
 
 /**
  * @author ccsw
@@ -12,14 +16,11 @@ import java.util.List;
  */
 public interface LoanService {
 
-    /**
-     *
-     * @param fechainic título del juego
-     * @param idCliente PK del cliente
-     * @param idGame PK del juego
-     * @return {@link List} de {@link Loan}
-     */
-    List<Loan> find(Date fechainic, Long idGame, Long idCliente);
+    List<Loan> findAll();
+
+
+    Page<Loan> findPage(Long gameId, Long clientId, LocalDate date, LoanSearchDto dto);
+
 
     /**
      * Guarda o modifica un juego, dependiendo de si el identificador está o no informado
@@ -36,6 +37,7 @@ public interface LoanService {
      */
      void delete(Long id) throws Exception;
 
+ 
 
 }
 
