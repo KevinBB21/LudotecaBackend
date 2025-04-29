@@ -16,12 +16,9 @@ import org.springframework.data.domain.Page;
  */
 public interface LoanService {
 
-    List<Loan> findAll();
+  List<Loan> findAll();
 
-
-    Page<Loan> findPage(Long gameId, Long clientId, LocalDate date, LoanSearchDto dto);
-
-
+  Page<Loan> findPage(Long gameId, Long clientId, String dateString, LoanSearchDto dto);
     /**
      * Guarda o modifica un juego, dependiendo de si el identificador está o no informado
      *

@@ -44,24 +44,20 @@ public class LoanController {
      * @return {@link Page} de {@link LoanDto}
      */
     @Operation(summary = "Find Page", description = "Method that returns a page of Loans")
-    @RequestMapping(path = "", method = RequestMethod.POST)
-    public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto,
+@RequestMapping(path = "", method = RequestMethod.POST)
+public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto,
                               @RequestParam(value = "gameId", required = false) Long idGame,
                               @RequestParam(value = "clientId", required = false) Long idClient,
                               @RequestParam(value = "date", required = false) String dateString) {
+                              
 
-    LocalDate date = null;
-    if (dateString != null) {
-        try {
-            // Convertir directamente la cadena a LocalDate
-            date = LocalDate.parse(dateString);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid date format. Please use 'yyyy-MM-dd'.");
-        }
-    }
+    // Log para verificar los valores recibidos
+    System.out.println("gameId: " + idGame + ", clientId: " + idClient + ", date: " + dateString);
+    
+    
 
     // Llamar al servicio con los filtros proporcionados
-    Page<Loan> page = this.loanService.findPage(idGame, idClient, date, dto);
+    Page<Loan> page = this.loanService.findPage(idGame, idClient, dateString, dto);
 
     // Convertir la página de entidades Loan a LoanDto
     return new PageImpl<>(

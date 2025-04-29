@@ -22,28 +22,16 @@ public class LoanSpecification implements Specification<Loan> {
     }
 
     @Override
-    public Predicate toPredicate(Root<Loan> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-        if (criteria.getOperation().equalsIgnoreCase(":") && criteria.getValue() != null) {
-            Path<String> path = getPath(root);
-            if (path.getJavaType() == String.class) {
-                return builder.like(path, "%" + criteria.getValue() + "%");
-            } else {
-                return builder.equal(path, criteria.getValue());
-            }
-        } else if (criteria.getOperation().equalsIgnoreCase("between") && criteria.getValue() != null) {
-            // Verificar si el valor es una lista de fechas
-            @SuppressWarnings("unchecked")
-            List<LocalDate> dates = (List<LocalDate>) criteria.getValue();
-            if (dates.size() == 2) {
-                return builder.and(
-                    builder.greaterThanOrEqualTo(root.get("fechainic"), dates.get(0)),
-                    builder.lessThanOrEqualTo(root.get("fechafin"), dates.get(1))
-                );
-            } else {
-                throw new IllegalArgumentException("Invalid date range. Expected exactly 2 dates.");
-            }
+public Predicate toPredicate(Root<Loan> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
+    Path<?> path = getPath(root);
+    if (criteria.getOperation().equalsIgnoreCase(":") && criteria.getValue() != null) {
+        if (path.getJavaType() == String.class) {
+            return builder.equal(path, criteria.getValue());
+        } else {
+            return builder.equal(path, criteria.getValue());
         }
-        return null;
+    }
+    return null;
 }
 
     private Path<String> getPath(Root<Loan> root) {

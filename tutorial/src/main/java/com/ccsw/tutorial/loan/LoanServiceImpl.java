@@ -45,23 +45,26 @@ public class LoanServiceImpl implements LoanService {
      * {@inheritDoc}
      */
     @Override
-    public Page<Loan> findPage(Long gameId, Long clientId, LocalDate date, LoanSearchDto dto) {
-    // Especificaciones para filtrar por gameId y clientId
-    LoanSpecification idGameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", gameId));
-    LoanSpecification idClientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", clientId));
-
-    Specification<Loan> spec = Specification.where(idGameSpec).and(idClientSpec);
-
-    // Validar si la fecha no es nula antes de agregar el filtro de fechas
-    if (date != null) {
-        LoanSpecification dateBetweenSpec = new LoanSpecification(
-            new SearchCriteria("fechainic", "between", List.of(date, date))
-        );
-        spec = spec.and(dateBetweenSpec);
+    public Page<Loan> findPage(Long gameId, Long clientId, String dateString, LoanSearchDto dto) {
+        // Especificaciones para filtrar por gameId y clientId
+        LoanSpecification idGameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", gameId));
+        LoanSpecification idClientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", clientId));
+    
+        Specification<Loan> spec = Specification.where(idGameSpec).and(idClientSpec);
+    
+        // Validar si la fecha no es nula antes de agregar el filtro de fechas
+        if (dateString != null) {
+            try {
+                LocalDate date = LocalDate.parse(dateString); // Convertir String a LocalDate
+                LoanSpecification dateSpec = new LoanSpecification(new SearchCriteria("fechainic", ":", date));
+                spec = spec.and(dateSpec);
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Invalid date format. Please use 'yyyy-MM-dd'.");
+            }
+        }
+    
+        return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
     }
-
-    return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
-}
     /**
      * {@inheritDoc}
      */
