@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -46,45 +47,73 @@ public class LoanServiceImpl implements LoanService {
      */
     @Override
     public Page<Loan> findPage(Long gameId, Long clientId, String dateString, LoanSearchDto dto) {
-        // Especificaciones para filtrar por gameId y clientId
-        LoanSpecification idGameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", gameId));
-        LoanSpecification idClientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", clientId));
+    // Especificaciones para filtrar por gameId y clientId
+    LoanSpecification idGameSpec = new LoanSpecification(new SearchCriteria("game.id", ":", gameId));
+    LoanSpecification idClientSpec = new LoanSpecification(new SearchCriteria("client.id", ":", clientId));
     
-        Specification<Loan> spec = Specification.where(idGameSpec).and(idClientSpec);
+    Specification<Loan> spec = Specification.where(idGameSpec).and(idClientSpec);
     
-        // Validar si la fecha no es nula antes de agregar el filtro de fechas
-        if (dateString != null) {
-            try {
-                LocalDate date = LocalDate.parse(dateString); // Convertir String a LocalDate
-                LoanSpecification dateSpec = new LoanSpecification(new SearchCriteria("fechainic", ":", date));
-                spec = spec.and(dateSpec);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Invalid date format. Please use 'yyyy-MM-dd'.");
-            }
+    // Validar si la fecha no es nula antes de agregar el filtro de rango de fechas
+    if (dateString != null) {
+        try {
+            LocalDate date = LocalDate.parse(dateString); // Convertir String a LocalDate
+            
+            // Agregar filtro para verificar si la fecha está dentro del rango
+            LoanSpecification dateRangeSpec = new LoanSpecification(new SearchCriteria("fechainic", "between", List.of(date, date)));
+            spec = spec.and(dateRangeSpec);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid date format. Please use 'yyyy-MM-dd'.");
         }
+    }
     
-        return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
+    return this.loanRepository.findAll(spec, dto.getPageable().getPageable());
     }
     /**
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, LoanDto dto) {
-
-        Loan loan;
-
-        if (id == null) {
-            loan = new Loan();
-        } else {
-            loan = this.loanRepository.findById(id).orElse(null);
-        }
-
-        BeanUtils.copyProperties(dto, loan, "id", "game", "client");
-        loan.setClient(clientService.get(dto.getClient().getId()));
-        loan.setGame(gameService.get(dto.getGame().getId()));
-
-        this.loanRepository.save(loan);
+public void save(Long id, LoanDto dto) {
+    // Validar que la fecha de fin no sea anterior a la fecha de inicio
+    if (dto.getFechainic().isAfter(dto.getFechafin())) {
+        throw new IllegalArgumentException("The end date cannot be earlier than the start date.");
     }
+
+    // Validar que el periodo de préstamo no sea mayor a 14 días
+    if (ChronoUnit.DAYS.between(dto.getFechainic(), dto.getFechafin()) > 14) {
+        throw new IllegalArgumentException("The loan period cannot exceed 14 days.");
+    }
+
+    // Validar que el juego no esté prestado a otro cliente en el mismo rango de fechas
+    List<Loan> overlappingLoans = loanRepository.findOverlappingLoans(
+        dto.getGame().getId(),
+        dto.getFechainic(),
+        dto.getFechafin()
+    );
+
+    if (!overlappingLoans.isEmpty()) {
+        throw new IllegalArgumentException("The game is already loaned to another client during the selected dates.");
+    }
+
+    // Validar que el cliente no tenga más de 2 préstamos en el mismo rango de fechas
+    List<Loan> clientLoans = loanRepository.findClientLoansInRange(
+        dto.getClient().getId(),
+        dto.getFechainic(),
+        dto.getFechafin()
+    );
+
+    if (clientLoans.size() >= 2) {
+        throw new IllegalArgumentException("The client cannot have more than 2 loans during the selected dates.");
+    }
+
+    Loan loan = (id == null) ? new Loan() : this.loanRepository.findById(id).orElseThrow(() ->
+            new IllegalArgumentException("Loan with ID " + id + " does not exist."));
+
+    BeanUtils.copyProperties(dto, loan, "id", "game", "client");
+    loan.setClient(clientService.get(dto.getClient().getId()));
+    loan.setGame(gameService.get(dto.getGame().getId()));
+
+    this.loanRepository.save(loan);
+}
 
        /**
      * {@inheritDoc}
