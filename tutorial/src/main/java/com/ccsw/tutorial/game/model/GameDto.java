@@ -22,6 +22,14 @@ public class GameDto {
     /**
      * @return id
      */
+
+     public GameDto() {
+    }
+
+    public GameDto(Long id) {
+        this.id = id;
+    }
+    
     public Long getId() {
 
         return this.id;

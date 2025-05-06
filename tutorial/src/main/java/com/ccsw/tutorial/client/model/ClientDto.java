@@ -6,6 +6,13 @@ public class ClientDto {
 
     private String name;
 
+    public ClientDto() {
+    }
+
+    public ClientDto(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return this.id;
     }

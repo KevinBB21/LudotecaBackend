@@ -55,4 +55,7 @@ public class LoanDto {
         this.game = game;
 
     }
+
+    
+
 }

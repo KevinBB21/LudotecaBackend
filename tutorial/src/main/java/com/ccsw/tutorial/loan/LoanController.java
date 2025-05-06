@@ -69,7 +69,7 @@ public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto,
     
     
     /**
-     * Método para recuperar una lista de {@link Game}
+     * Método para recuperar una lista de {@link loan}
      *
      * @param fecha fecha inicial
      * @param idGame PK del game
@@ -102,11 +102,11 @@ public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto,
     }
 
    /**
-     * Método para borrar una {@link Category}
+     * Método para borrar una {@link loan}
      *
      * @param id PK de la entidad
      */
-    @Operation(summary = "Delete", description = "Method that deletes a Category")
+    @Operation(summary = "Delete", description = "Method that deletes a Loan")
     @RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
     public void delete(@PathVariable("id") Long id) throws Exception {
 
