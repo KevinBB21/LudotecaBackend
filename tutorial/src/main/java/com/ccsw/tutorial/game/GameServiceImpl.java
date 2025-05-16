@@ -55,22 +55,36 @@ public class GameServiceImpl implements GameService {
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, GameDto dto) {
-
-        Game game;
-
-        if (id == null) {
-            game = new Game();
-        } else {
-            game = this.gameRepository.findById(id).orElse(null);
-        }
-
-        BeanUtils.copyProperties(dto, game, "id", "author", "category");
-
-        game.setAuthor(authorService.get(dto.getAuthor().getId()));
-        game.setCategory(categoryService.get(dto.getCategory().getId()));
-
-        this.gameRepository.save(game);
+public void save(Long id, GameDto dto) {
+    // Validar que el título del juego no sea nulo o contenga solo espacios
+    if (dto.getTitle() != null && dto.getTitle().trim().isEmpty()) {
+        throw new IllegalArgumentException("Game title cannot be empty or contain only spaces.");
     }
+
+    // Validar que el autor no sea nulo
+    if (dto.getAuthor() == null || dto.getAuthor().getId() == null) {
+        throw new IllegalArgumentException("Author cannot be null.");
+    }
+
+    // Validar que la categoría no sea nula
+    if (dto.getCategory() == null || dto.getCategory().getId() == null) {
+        throw new IllegalArgumentException("Category cannot be null.");
+    }
+
+    Game game;
+
+    if (id == null) {
+        game = new Game();
+    } else {
+        game = this.gameRepository.findById(id).orElse(null);
+    }
+
+    BeanUtils.copyProperties(dto, game, "id", "author", "category");
+
+    game.setAuthor(authorService.get(dto.getAuthor().getId()));
+    game.setCategory(categoryService.get(dto.getCategory().getId()));
+
+    this.gameRepository.save(game);
+}
 
 }
