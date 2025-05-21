@@ -42,24 +42,27 @@ public class ClientServiceImpl implements ClientService {
      * {@inheritDoc}
      */
     @Override
-    public void save(Long id, ClientDto dto) {
-
-          Client client;
-
-        boolean exists = clientRepository.existsByName(dto.getName());
-        if (exists) {
-        throw new DuplicateClientNameException("A client with the same name already exists.");
+public void save(Long id, ClientDto dto) {
+    // Validar que el nombre no sea nulo ni solo espacios
+    if (dto.getName() == null || dto.getName().trim().isEmpty()) {
+        throw new IllegalArgumentException("El nombre del cliente no puede estar vacío ni contener solo espacios.");
     }
 
-          if (id == null) {
-             client = new Client();
-          } else {
-             client = this.clientRepository.findById(id).orElse(null);
-          }
-
-          client.setName(dto.getName());
-          this.clientRepository.save(client);
+    boolean exists = clientRepository.existsByName(dto.getName());
+    if (exists) {
+        throw new DuplicateClientNameException("Ya existe un cliente con ese nombre.");
     }
+
+    Client client;
+    if (id == null) {
+        client = new Client();
+    } else {
+        client = this.clientRepository.findById(id).orElse(null);
+    }
+
+    client.setName(dto.getName());
+    this.clientRepository.save(client);
+}
 
     /**
      * {@inheritDoc}

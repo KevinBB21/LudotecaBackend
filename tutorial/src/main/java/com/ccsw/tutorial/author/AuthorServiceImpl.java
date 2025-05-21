@@ -45,19 +45,27 @@ public class AuthorServiceImpl implements AuthorService {
      */
     @Override
     public void save(Long id, AuthorDto data) {
-
-        Author author;
-
-        if (id == null) {
-            author = new Author();
-        } else {
-            author = this.get(id);
-        }
-
-        BeanUtils.copyProperties(data, author, "id");
-
-        this.authorRepository.save(author);
+    // Validar que el nombre no sea nulo ni solo espacios
+    if (data.getName() == null || data.getName().trim().isEmpty()) {
+        throw new IllegalArgumentException("El nombre del autor no puede estar vacío ni contener solo espacios.");
     }
+    // Validar que la nacionalidad no sea nula ni solo espacios
+    if (data.getNationality() == null || data.getNationality().trim().isEmpty()) {
+        throw new IllegalArgumentException("La nacionalidad del autor no puede estar vacía ni contener solo espacios.");
+    }
+
+    Author author;
+
+    if (id == null) {
+        author = new Author();
+    } else {
+        author = this.get(id);
+    }
+
+    BeanUtils.copyProperties(data, author, "id");
+
+    this.authorRepository.save(author);
+}
 
     /**
      * {@inheritDoc}

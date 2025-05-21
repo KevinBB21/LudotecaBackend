@@ -75,12 +75,12 @@ public class LoanServiceImpl implements LoanService {
 public void save(Long id, LoanDto dto) {
     // Validar que la fecha de fin no sea anterior a la fecha de inicio
     if (dto.getFechainic().isAfter(dto.getFechafin())) {
-        throw new IllegalArgumentException("The end date cannot be earlier than the start date.");
+        throw new IllegalArgumentException("La fecha de fin no puede ser anterior a la fecha de inicio.");
     }
 
     // Validar que el periodo de préstamo no sea mayor a 14 días
     if (ChronoUnit.DAYS.between(dto.getFechainic(), dto.getFechafin()) > 14) {
-        throw new IllegalArgumentException("The loan period cannot exceed 14 days.");
+        throw new IllegalArgumentException("El periodo de préstamo no puede exceder los 14 días.");
     }
 
     // Validar que el juego no esté prestado a otro cliente en el mismo rango de fechas
@@ -91,7 +91,7 @@ public void save(Long id, LoanDto dto) {
     );
 
     if (!overlappingLoans.isEmpty()) {
-        throw new IllegalArgumentException("The game is already loaned to another client during the selected dates.");
+        throw new IllegalArgumentException("El juego ya está prestado a otro cliente durante las fechas seleccionadas.");
     }
 
     // Validar que el cliente no tenga más de 2 préstamos en el mismo rango de fechas
@@ -102,11 +102,11 @@ public void save(Long id, LoanDto dto) {
     );
 
     if (clientLoans.size() >= 2) {
-        throw new IllegalArgumentException("The client cannot have more than 2 loans during the selected dates.");
+        throw new IllegalArgumentException("El cliente no puede tener más de 2 préstamos durante las fechas seleccionadas.");
     }
 
     Loan loan = (id == null) ? new Loan() : this.loanRepository.findById(id).orElseThrow(() ->
-            new IllegalArgumentException("Loan with ID " + id + " does not exist."));
+            new IllegalArgumentException("No existe un préstamo con el ID " + id + "."));
 
     BeanUtils.copyProperties(dto, loan, "id", "game", "client");
     loan.setClient(clientService.get(dto.getClient().getId()));
@@ -114,7 +114,6 @@ public void save(Long id, LoanDto dto) {
 
     this.loanRepository.save(loan);
 }
-
        /**
      * {@inheritDoc}
      */
