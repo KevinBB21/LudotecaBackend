@@ -4,8 +4,7 @@ import com.ccsw.tutorial.loan.model.Loan;
 import com.ccsw.tutorial.loan.model.LoanDto;
 import com.ccsw.tutorial.loan.model.LoanSearchDto;
 
-import java.sql.Date;
-import java.time.LocalDate;
+
 import java.util.List;
 
 import org.springframework.data.domain.Page;
