@@ -51,15 +51,12 @@ public Page<LoanDto> findPage(@RequestBody LoanSearchDto dto,
                               @RequestParam(value = "date", required = false) String dateString) {
                               
 
-    // Log para verificar los valores recibidos
     System.out.println("gameId: " + idGame + ", clientId: " + idClient + ", date: " + dateString);
     
     
 
-    // Llamar al servicio con los filtros proporcionados
     Page<Loan> page = this.loanService.findPage(idGame, idClient, dateString, dto);
 
-    // Convertir la página de entidades Loan a LoanDto
     return new PageImpl<>(
         page.getContent().stream().map(e -> mapper.map(e, LoanDto.class)).collect(Collectors.toList()),
         page.getPageable(),

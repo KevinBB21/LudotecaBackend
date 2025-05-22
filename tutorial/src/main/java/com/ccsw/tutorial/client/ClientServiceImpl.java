@@ -43,7 +43,6 @@ public class ClientServiceImpl implements ClientService {
      */
     @Override
 public void save(Long id, ClientDto dto) {
-    // Validar que el nombre no sea nulo ni solo espacios
     if (dto.getName() == null || dto.getName().trim().isEmpty()) {
         throw new IllegalArgumentException("El nombre del cliente no puede estar vacío ni contener solo espacios.");
     }

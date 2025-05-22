@@ -31,7 +31,6 @@ public class LoanSpecification implements Specification<Loan> {
             return builder.equal(path, criteria.getValue());
         }
     } else if (criteria.getOperation().equalsIgnoreCase("between") && criteria.getValue() != null) {
-        // Verificar si el valor es una lista de fechas
         @SuppressWarnings("unchecked")
         List<LocalDate> dates = (List<LocalDate>) criteria.getValue();
         if (dates.size() == 2) {

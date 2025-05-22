@@ -56,12 +56,10 @@ public class GameServiceImpl implements GameService {
      */
     @Override
 public void save(Long id, GameDto dto) {
-    // Validar que el título del juego no sea nulo o contenga solo espacios
     if (dto.getTitle() != null && dto.getTitle().trim().isEmpty()) {
         throw new IllegalArgumentException("El título del juego no puede estar vacío ni contener solo espacios.");
     }
 
-    // Validar que el autor no sea nulo ni negativo
     if (dto.getAuthor() == null || dto.getAuthor().getId() == null) {
         throw new IllegalArgumentException("El autor no puede ser nulo.");
     }
@@ -69,7 +67,6 @@ public void save(Long id, GameDto dto) {
         throw new IllegalArgumentException("El ID del autor no puede ser negativo.");
     }
 
-    // Validar que la categoría no sea nula ni negativa
     if (dto.getCategory() == null || dto.getCategory().getId() == null) {
         throw new IllegalArgumentException("La categoría no puede ser nula.");
     }
@@ -77,7 +74,6 @@ public void save(Long id, GameDto dto) {
         throw new IllegalArgumentException("El ID de la categoría no puede ser negativo.");
     }
 
-    // Si el campo age es numérico y quieres validar que no sea negativo
     if (dto.getAge() != null) {
         try {
             int ageValue = Integer.parseInt(dto.getAge().trim());

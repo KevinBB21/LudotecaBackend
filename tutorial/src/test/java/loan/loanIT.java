@@ -75,7 +75,6 @@ public class loanIT {
 
     @Test
     public void shouldNotAllowGameToBeLoanedToMultipleClientsOnSameDay() {
-        // Crear el primer préstamo
         LoanDto firstLoan = new LoanDto();
         firstLoan.setFechainic(LocalDate.of(2025, 5, 1));
         firstLoan.setFechafin(LocalDate.of(2025, 5, 5));
@@ -91,7 +90,6 @@ public class loanIT {
 
         assertThat(firstResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        // Intentar crear un segundo préstamo para el mismo juego en el mismo rango de fechas
         LoanDto secondLoan = new LoanDto();
         secondLoan.setFechainic(LocalDate.of(2025, 5, 3));
         secondLoan.setFechafin(LocalDate.of(2025, 5, 7));
@@ -111,7 +109,6 @@ public class loanIT {
 
     @Test
     public void shouldNotAllowClientToHaveMoreThanTwoLoansOnSameDay() {
-        // Crear el primer préstamo
         LoanDto firstLoan = new LoanDto();
         firstLoan.setFechainic(LocalDate.of(2025, 5, 1));
         firstLoan.setFechafin(LocalDate.of(2025, 5, 5));
@@ -127,7 +124,6 @@ public class loanIT {
 
         assertThat(firstResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        // Crear el segundo préstamo
         LoanDto secondLoan = new LoanDto();
         secondLoan.setFechainic(LocalDate.of(2025, 5, 2));
         secondLoan.setFechafin(LocalDate.of(2025, 5, 6));
@@ -143,7 +139,6 @@ public class loanIT {
 
         assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        // Intentar crear un tercer préstamo para el mismo cliente en el mismo rango de fechas
         LoanDto thirdLoan = new LoanDto();
         thirdLoan.setFechainic(LocalDate.of(2025, 5, 3));
         thirdLoan.setFechafin(LocalDate.of(2025, 5, 7));
